@@ -1,6 +1,27 @@
 import random
 from random import randrange
 import string
+import serial 
+
+
+ser = serial.Serial("/dev/cu.usbmodem1411",9600)
+print(ser.name)
+
+
+def sendW(char):  #send serial
+	
+	#while(True):
+	command = char
+	#print(char)
+	command = command.strip()
+	#command = command + "\n"
+	command = command.encode()
+	#print(command)
+	ser.write(command)
+	
+
+
+
 
 questions = ["This Commander-in-Chief of the Continental Army later became the first President of the United States?", 
     		"This famous actor just won his first Oscar after 26 years of acting.", 
@@ -22,6 +43,7 @@ def main():
 		
 		if state == 0:
 			print ("You awaken in a room filled with mystery. Which way will you go?")
+			sendW('H')
 			command = input("Front or Back: ")
 			if command == "Front" or command == "front":
 				print ("You are going towards Mystery Door")
@@ -34,11 +56,11 @@ def main():
 				state = 0
 		if state == 1:
 			print ("You are in front of the Mystery Door. Will you open it?")
-			command = input("Open or Close: ")
-			if command == "Open" or command == "open":
+			command = input("Yes or No: ")
+			if command == "Yes" or command == "yes":
 				print ("Oh boy...mystery")
 				state = 2
-			elif command == "Close" or command == "close":
+			elif command == "No" or command == "no":
 				print ("Come on man.....")
 				state = 8
 			else:
@@ -61,9 +83,10 @@ def main():
 			random_item = random.choice(questions)
 			correctAnswer = answerToQuestions(random_item)
 			print ("You are now approaching Big Bandit...")
+			sendW('L')
 			command = input("Fight or Run: ")
 			if command == "Fight" or command == "fight":
-				print ("In order to defeat me you must answer my questions HAHAHAHA ")
+				print ("In order to defeat me you must answer my questions traveller ")
 				command = input("Answer or Nah: ")
 				if command == "Answer" or command == "answer":
 					randomQuestion2 = randomQuestion(random_item)
@@ -71,7 +94,11 @@ def main():
 					userAnswer = input("Whats your answer: ")
 					userAnswer = userAnswer.lower()
 					checkAnswer2 = checkAnswer(userAnswer, correctAnswer)
-					state = 4 
+					
+					if checkAnswer2 == True:
+						state = 4
+					else:
+						state = 8
 				elif command == "Nah" or command == "nah":
 					print ("You're so close yet you lost")
 					state = 8
@@ -80,14 +107,14 @@ def main():
 					state = 3
 			elif command == "Run" or command == "run":
 				print ("I guess the mystery door was too much for you")
-				state = 6
-			else:
-				print ("Wrong input. Try Again")
-				state = 3
+				state = 8
 
 		
 		
 		elif state == 4:
+			print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+			print ("Welcome to Brooky carvan")
+			print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 			print("You are now approaching Brooky carvan... Do you want to continue? ")		
 			command = input("Yes or No: ")
 			if command == "Yes" or command == "yes":
@@ -97,20 +124,25 @@ def main():
 				next_random_item = random.choice(questions)
 				nextQuestion = randomQuestion(next_random_item)
 				print (nextQuestion)
-				
-				
 				removeAnswer = answers.remove(userAnswer)
 				correctAnswer2 = answerToQuestions(next_random_item)
 				next_userAnswer = input("Whats your answer: ")
 				next_userAnswer = next_userAnswer.lower()
 				checkAnswer3 = checkAnswer(next_userAnswer, correctAnswer2)
-				state = 5
-		else:
-			print ("You're so close yet you lost")
-			state = 8
+				
+				if checkAnswer3 == True:
+					state = 5
+				else:
+					state = 8
+			else:
+				print ("You're so close yet you lost")
+				state = 8
 
 		elif state == 5:
-			print("You are now approaching moody carvan... Do you want to continue? ")		
+			print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+			print ("Welcome to the Moody swamps of dispair")
+			print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+			print("You are now approaching moody swamps... Do you want to continue? ")		
 			command = input("Yes or No: ")
 			if command == "Yes" or command == "yes":
 				 
@@ -125,10 +157,21 @@ def main():
 				next_userAnswer1 = input("Whats your answer: ")
 				next_userAnswer1 = next_userAnswer1.lower()
 				checkAnswer4 = checkAnswer(next_userAnswer1, correctAnswer3)
-				state = 6
+				
+				if checkAnswer4 == True:
+					state = 6
+				else:
+					state = 8
+			
+			else:
+				print ("Better luck next time")
+				state = 8
 				
 		elif state == 6:
-			print("You are now approaching brooksberk... Do you want to continue? ")		
+			print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+			print ("Welcome to The Boogey Down")
+			print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+			print("You are now approaching The Boogey Down... Do you want to continue? ")		
 			command = input("Yes or No: ")
 			if command == "Yes" or command == "yes":
 				 
@@ -143,10 +186,18 @@ def main():
 				next_userAnswer2 = input("Whats your answer: ")
 				next_userAnswer2 = next_userAnswer2.lower()
 				checkAnswer5 = checkAnswer(next_userAnswer2, correctAnswer4)
-				state = 7
+				
+				if checkAnswer5 == True:
+					state = 7
+				else:
+					state = 8
+				
 		
 		elif state == 7:
-			print("You are now approaching berk... Do you want to continue? ")		
+			print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+			print ("Welcome to Crooksville")
+			print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+			print("You are now approaching Crooksville... Do you want to continue? ")		
 			command = input("Yes or No: ")
 			if command == "Yes" or command == "yes":
 				 
@@ -161,7 +212,9 @@ def main():
 				next_userAnswer3 = input("Whats your answer: ")
 				next_userAnswer3 = next_userAnswer3.lower()
 				checkAnswer6 = checkAnswer(next_userAnswer3, correctAnswer5)
-				state = 8
+				
+				if checkAnswer6 == True:
+					state = 8
 		
 		elif state == 8:
 			print("GAME OVER")
@@ -201,8 +254,10 @@ def checkAnswer(string1, string2):
 	
 	if string1 == string2:
 		print ("Ahh I am defeated")
+		return True
 	else:
 		print ("Wrong answer!")
-
+		state = 8
+		return False
 
 main()
